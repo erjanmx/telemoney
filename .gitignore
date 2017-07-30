@@ -1,0 +1,11 @@
+.idea/
+venv/
+
+.DS_Store
+client_secret.json
+telemoney/settings.py
+db.sqlite3
+telemoney.log
+
+__pycache__/
+*.pyc
