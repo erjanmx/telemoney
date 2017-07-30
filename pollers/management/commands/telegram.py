@@ -28,14 +28,13 @@ def income(bot, update, groups):
     card = Card.objects.get(number=update.message.from_user.id)
     record = History.objects.create(amount=amount, card_id=card.id, details='', type='Наличные')
 
-    text = "*{}*\n\n{}р\n{}(/{})\n" \
+    text = "{}\n\n{}р\n{}(/{})\n" \
            "--------------------------------------------------" \
         .format(record.card.name, amount, record.type, record.id)
 
     keyboard_markup = get_keyboard_markup(record.id, record.type)
 
-    m = bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=text, parse_mode='Markdown',
-                         reply_markup=keyboard_markup)
+    m = bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=text, reply_markup=keyboard_markup)
     record.telegram_message_id = m.message_id
     record.card_id = card.id
     record.save()
@@ -46,11 +45,10 @@ def edit(bot, update, groups):
 
     hid = int(groups[0])
     record = History.objects.get(id=hid)
-    text = "*{}*\n\n{}р\n{} {}(/{})\n" \
+    text = "{}\n\n{}р\n{} {}(/{})\n" \
            "--------------------------------------------------" \
         .format(record.card.name, record.amount, record.type, record.details, record.id)
-    bot.edit_message_text(text=text, parse_mode='Markdown',
-                          chat_id=TELEGRAM_CHAT_ID,
+    bot.edit_message_text(text=text, chat_id=TELEGRAM_CHAT_ID,
                           message_id=record.telegram_message_id, reply_markup=get_keyboard_markup(hid, record.type))
 
 
@@ -77,12 +75,11 @@ def button(bot, update):
     record.is_active = 1 if category['id'] else 0
     record.save()
 
-    text = "*{}*\n\n{}р\n{} {}(/{})\n\n{}\n" \
+    text = "{}\n\n{}р\n{} {}(/{})\n\n{}\n" \
         "--------------------------------------------------" \
         .format(record.card.name, record.amount, record.type, record.details, record.id, category['name'])
 
-    bot.edit_message_text(text=text, parse_mode='Markdown',
-                          chat_id=query.message.chat_id,
+    bot.edit_message_text(text=text, chat_id=query.message.chat_id,
                           message_id=query.message.message_id)
 
 

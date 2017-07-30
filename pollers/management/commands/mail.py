@@ -95,7 +95,7 @@ class Command(BaseCommand):
                                                     balance=message['balance'], raw_text=raw_content)
 
                     bot = telegram.Bot(TELEGRAM_BOT_API_TOKEN)
-                    text = "*{}*\n\n{}р\n{} {}(/{})\n" \
+                    text = "{}\n\n{}р\n{} {}(/{})\n" \
                            "--------------------------------------------------"\
                         .format(record.card.name, record.amount, record.type, record.details, record.id)
 
@@ -112,15 +112,14 @@ class Command(BaseCommand):
                     elif similar:
                         record.is_active = 1
                         record.category_id = similar.category_id
-                        text = "*{}*\n\n{}р\n{} {}(/{})\n\n{}\n" \
+                        text = "{}\n\n{}р\n{} {}(/{})\n\n{}\n" \
                                "--------------------------------------------------" \
                             .format(card.name, record.amount, record.type, record.details, record.id,
                                     similar.category.name)
                     else:
                         keyboard_markup = get_keyboard_markup(record.id, message['type'])
 
-                    m = bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=text, parse_mode='Markdown',
-                                         reply_markup=keyboard_markup)
+                    m = bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=text, reply_markup=keyboard_markup)
 
                     record.telegram_message_id = m.message_id
                     record.save()
