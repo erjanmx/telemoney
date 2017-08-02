@@ -99,11 +99,8 @@ class Command(BaseCommand):
                            "--------------------------------------------------"\
                         .format(record.card.name, record.amount, record.type, record.details, record.id)
 
-                    try:
-                        similar = History.objects.filter(type=message['type'], details=message['details'],
-                                                         category__isnull=False).exclude(details__exact='').last()
-                    except History.DoesNotExist:
-                        similar = None
+                    similar = History.objects.filter(type=message['type'], details=message['details'],
+                                                     category__isnull=False).exclude(details__exact='').last()
 
                     keyboard_markup = None
                     if message['type'] == 'зачисление':
