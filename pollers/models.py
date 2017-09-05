@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Sum
 
 
 class Category(models.Model):
@@ -34,3 +35,12 @@ class History(models.Model):
     gmail_id = models.CharField(max_length=30, null=True, blank=True)
     telegram_message_id = models.IntegerField(null=True, default=None, blank=True)
 
+    @staticmethod
+    def get_report(date_from, date_to):
+        rep = History.objects \
+            .values('category__name', 'category_id') \
+            .filter(is_active=1, datetime__gte=date_from, datetime__lt=date_to) \
+            .annotate(amount=Sum('amount')) \
+            .order_by('category__position')
+
+        return rep
