@@ -53,7 +53,7 @@ def report(bot, update):
 def income(bot, update, groups):
     bot.delete_message(chat_id=TELEGRAM_CHAT_ID, message_id=update.message.message_id)
 
-    amount = int(groups[0])
+    amount = float(groups[0])
     card = Card.objects.get(number=update.message.from_user.id)
     record = History.objects.create(amount=amount, card_id=card.id, details='', type='Наличные')
 
@@ -161,7 +161,7 @@ class Command(BaseCommand):
         updater.dispatcher.add_handler(CommandHandler('report', report))
         updater.dispatcher.add_handler(CallbackQueryHandler(button))
         updater.dispatcher.add_handler(RegexHandler('/([\d]*)', edit, pass_groups=True))
-        updater.dispatcher.add_handler(RegexHandler('^([\d]*)$', income, pass_groups=True))
+        updater.dispatcher.add_handler(RegexHandler('^(\d+(\.\d+)?)$', income, pass_groups=True))
         updater.dispatcher.add_error_handler(error)
 
         updater.start_polling()
