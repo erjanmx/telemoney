@@ -5,8 +5,8 @@ from django.db import connection
 from django.core.management.base import BaseCommand
 
 from datetime import datetime
-from pollers.common import get_keyboard_markup
 from dateutil.relativedelta import relativedelta
+from pollers.common import get_keyboard_markup
 from pollers.models import History, Card, Category
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
@@ -53,11 +53,15 @@ def report(bot, update):
 def income(bot, update, groups):
     bot.delete_message(chat_id=TELEGRAM_CHAT_ID, message_id=update.message.message_id)
 
+    details = ''
     amount = float(groups[0])
-    card = Card.objects.get(number=update.message.from_user.id)
-    record = History.objects.create(amount=amount, card_id=card.id, details='', type='Наличные')
+    if (len(groups[1]) > 0):
+        details = groups[1];
 
-    text = "{}\n\n{}р\n{}(/{})\n" \
+    card = Card.objects.get(number=update.message.from_user.id)
+    record = History.objects.create(amount=amount, card_id=card.id, details=details.strip(), type='Наличные')
+
+    text = "{}\n\n{}р\n{} (/{})\n" \
            "--------------------------------------------------" \
         .format(record.card.name, amount, record.type, record.id)
 
@@ -75,7 +79,7 @@ def edit(bot, update, groups):
 
     hid = int(groups[0])
     record = History.objects.get(id=hid)
-    text = "{}\n\n{}р\n{} {}(/{})\n" \
+    text = "{}\n\n{}р\n{} ({}) (/{})\n" \
            "--------------------------------------------------" \
         .format(record.card.name, record.amount, record.type, record.details, record.id)
     bot.edit_message_text(text=text, chat_id=TELEGRAM_CHAT_ID,
@@ -110,7 +114,7 @@ def button(bot, update):
     record.is_active = 1 if category['id'] else 0
     record.save()
 
-    text = "{}\n\n{}р\n{} {}(/{})\n\n{}\n" \
+    text = "{}\n\n{}р\n{} ({}) (/{})\n\n{}\n" \
            "--------------------------------------------------" \
         .format(record.card.name, record.amount, record.type, record.details, record.id, category['name'])
 
@@ -120,6 +124,8 @@ def button(bot, update):
 
 
 def get_report(bot, message_id, date, new=True):
+    # print(message_id)
+    # print(date)
     result = {
         'text': '',
         'total_in': 0,
@@ -155,13 +161,18 @@ def get_report(bot, message_id, date, new=True):
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
+        # print(print_report())
+        # return
+
         updater = Updater(TELEGRAM_BOT_API_TOKEN)
 
         updater.dispatcher.add_handler(CommandHandler('start', start))
         updater.dispatcher.add_handler(CommandHandler('report', report))
         updater.dispatcher.add_handler(CallbackQueryHandler(button))
         updater.dispatcher.add_handler(RegexHandler('/([\d]*)', edit, pass_groups=True))
-        updater.dispatcher.add_handler(RegexHandler('^(\d+(\.\d+)?)$', income, pass_groups=True))
+        # updater.dispatcher.add_handler(RegexHandler('^([\d]*)$', income, pass_groups=True))
+        # updater.dispatcher.add_handler(RegexHandler('^(\d+(\.\d+)?)$', income, pass_groups=True))
+        updater.dispatcher.add_handler(RegexHandler('^(\d+[\.\d]*)([\s\w]*)$', income, pass_groups=True))
         updater.dispatcher.add_error_handler(error)
 
         updater.start_polling()
