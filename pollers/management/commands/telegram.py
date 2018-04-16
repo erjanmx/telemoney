@@ -114,9 +114,11 @@ def button(bot, update):
     record.is_active = 1 if category['id'] else 0
     record.save()
 
-    text = "{}\n\n{}р\n{} ({}) (/{})\n\n{}\n" \
+    details = '({}) '.format(record.details) if len(record.details) > 0 else ''
+
+    text = "{}\n\n{}р\n{} {}(/{})\n\n{}\n" \
            "--------------------------------------------------" \
-        .format(record.card.name, record.amount, record.type, record.details, record.id, category['name'])
+        .format(record.card.name, record.amount, record.type, details, record.id, category['name'])
 
     bot.edit_message_text(text=text, chat_id=query.message.chat_id,
                           message_id=query.message.message_id)
@@ -151,12 +153,12 @@ def get_report(bot, message_id, date, new=True):
         .format(date.strftime('%B, %Y'), result['text'], result['total_out'], result['total_in'])
 
     keyboard_markup = get_report_markup(message_id, date)
+    connection.close()
 
     if new:
         bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=text, reply_markup=keyboard_markup, parse_mode='Markdown')
     else:
         bot.edit_message_text(message_id=message_id, chat_id=TELEGRAM_CHAT_ID, text=text, reply_markup=keyboard_markup, parse_mode='Markdown')
-    connection.close()
 
 
 class Command(BaseCommand):
