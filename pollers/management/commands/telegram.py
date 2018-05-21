@@ -89,6 +89,7 @@ def edit(bot, update, groups):
 
 def button(bot, update):
     query = update.callback_query
+    bot.answer_callback_query(callback_query_id=query.id, text='')
 
     data = str(query.data).split(' ')
 
