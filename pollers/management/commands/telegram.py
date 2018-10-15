@@ -61,7 +61,7 @@ def income(bot, update, groups):
     card = Card.objects.get(number=update.message.from_user.id)
     record = History.objects.create(amount=amount, card_id=card.id, details=details.strip(), type='Наличные')
 
-    text = "{}\n\n{}р\n{} (/{})\n" \
+    text = "{}\n\n€{}\n{} (/{})\n" \
            "--------------------------------------------------" \
         .format(record.card.name, amount, record.type, record.id)
 
@@ -79,7 +79,7 @@ def edit(bot, update, groups):
 
     hid = int(groups[0])
     record = History.objects.get(id=hid)
-    text = "{}\n\n{}р\n{} ({}) (/{})\n" \
+    text = "{}\n\n€{}\n{} ({}) (/{})\n" \
            "--------------------------------------------------" \
         .format(record.card.name, record.amount, record.type, record.details, record.id)
     bot.edit_message_text(text=text, chat_id=TELEGRAM_CHAT_ID,
@@ -117,7 +117,7 @@ def button(bot, update):
 
     details = '({}) '.format(record.details) if len(record.details) > 0 else ''
 
-    text = "{}\n\n{}р\n{} {}(/{})\n\n{}\n" \
+    text = "{}\n\n€{}\n{} {}(/{})\n\n{}\n" \
            "--------------------------------------------------" \
         .format(record.card.name, record.amount, record.type, details, record.id, category['name'])
 
