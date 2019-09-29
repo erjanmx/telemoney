@@ -9,8 +9,7 @@ def get_keyboard_markup(message_id, history_type=''):
     callback_data = "{} {}"
     history_type = history_type.lower()
 
-    if history_type == 'наличные':
-        keyboard.append([InlineKeyboardButton("Пополнение", callback_data=callback_data.format(message_id, 10))])
+    keyboard.append([InlineKeyboardButton("Пополнение", callback_data=callback_data.format(message_id, 10))])
 
     if history_type == 'зачисление':
         kb.append(InlineKeyboardButton("Подвердить", callback_data=callback_data.format(message_id, 10)))
