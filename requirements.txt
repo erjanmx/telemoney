@@ -1,4 +1,4 @@
-certifi==2018.1.18
+certifi==2022.12.7
 Django==1.11.3
 future==0.16.0
 google-api-python-client==1.6.2
